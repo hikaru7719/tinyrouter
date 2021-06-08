@@ -19,7 +19,9 @@ type Router interface {
 }
 
 // TinyRouter implements http.Handler interface.
-type TinyRouter struct{}
+type TinyRouter struct {
+	Routes []*Route
+}
 
 func NewRouter() *TinyRouter {
 	return &TinyRouter{}
