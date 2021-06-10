@@ -41,21 +41,55 @@ func TestMakePattern(t *testing.T) {
 	}{
 		"path without param": {
 			path:   "/todo",
-			expect: "^/todo$",
+			expect: "^/todo[/]?$",
 		},
 		"path with param": {
 			path:   "/todo/{id}",
-			expect: "^/todo/([^/]+)$",
+			expect: "^/todo/([^/]+)[/]?$",
 		},
 		"path with multiple param": {
 			path:   "/todo/{id}/{field}",
-			expect: "^/todo/([^/]+)/([^/]+)$",
+			expect: "^/todo/([^/]+)/([^/]+)[/]?$",
 		},
 	}
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
 			indexList, _ := bracesIndex(tc.path)
-			actual := makePattern(tc.path, indexList)
+			actual := makePatternString(tc.path, indexList)
+			assert.Equal(t, tc.expect, actual)
+		})
+	}
+}
+
+func TestNormalize(t *testing.T) {
+	cases := map[string]struct {
+		path        string
+		expect      string
+		expectError error
+	}{
+		"invalid path": {
+			path:        "todo",
+			expect:      "",
+			expectError: InvalidPathError,
+		},
+		"path has '/' suffix": {
+			path:        "/todo/",
+			expect:      "/todo",
+			expectError: nil,
+		},
+		"path doesn't have '/' suffix": {
+			path:        "/todo",
+			expect:      "/todo",
+			expectError: nil,
+		},
+	}
+
+	for name, tc := range cases {
+		t.Run(name, func(t *testing.T) {
+			actual, err := normalize(tc.path)
+			if tc.expectError != nil {
+				assert.Equal(t, tc.expectError, err)
+			}
 			assert.Equal(t, tc.expect, actual)
 		})
 	}
