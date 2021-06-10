@@ -24,25 +24,54 @@ type TinyRouter struct {
 }
 
 func NewRouter() *TinyRouter {
-	return &TinyRouter{}
+	return &TinyRouter{
+		Routes: make([]*Route, 0),
+	}
+}
+
+func (t *TinyRouter) addRoute(method string, path string, f func(http.ResponseWriter, *http.Request)) {
+	route, err := NewRoute(method, path, f)
+	if err != nil {
+		// TODO: implement err handling
+		panic(err)
+	}
+	t.Routes = append(t.Routes, route)
+}
+
+func (t *TinyRouter) Head(path string, f func(http.ResponseWriter, *http.Request)) {
+	t.addRoute(http.MethodHead, path, f)
+}
+
+func (t *TinyRouter) Get(path string, f func(http.ResponseWriter, *http.Request)) {
+	t.addRoute(http.MethodGet, path, f)
+}
+
+func (t *TinyRouter) Post(path string, f func(http.ResponseWriter, *http.Request)) {
+	t.addRoute(http.MethodPost, path, f)
+}
+
+func (t *TinyRouter) Put(path string, f func(http.ResponseWriter, *http.Request)) {
+	t.addRoute(http.MethodPut, path, f)
+}
+
+func (t *TinyRouter) Patch(path string, f func(http.ResponseWriter, *http.Request)) {
+	t.addRoute(http.MethodPatch, path, f)
+}
+
+func (t *TinyRouter) Delete(path string, f func(http.ResponseWriter, *http.Request)) {
+	t.addRoute(http.MethodDelete, path, f)
+}
+
+func (t *TinyRouter) Options(path string, f func(http.ResponseWriter, *http.Request)) {
+	t.addRoute(http.MethodOptions, path, f)
+}
+
+func (t *TinyRouter) Connect(path string, f func(http.ResponseWriter, *http.Request)) {
+	t.addRoute(http.MethodConnect, path, f)
+}
+
+func (t *TinyRouter) Trace(path string, f func(http.ResponseWriter, *http.Request)) {
+	t.addRoute(http.MethodTrace, path, f)
 }
 
 func (t *TinyRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {}
-
-func (t *TinyRouter) Head(path string, f func(http.ResponseWriter, *http.Request)) {}
-
-func (t *TinyRouter) Get(path string, f func(http.ResponseWriter, *http.Request)) {}
-
-func (t *TinyRouter) Post(path string, f func(http.ResponseWriter, *http.Request)) {}
-
-func (t *TinyRouter) Put(path string, f func(http.ResponseWriter, *http.Request)) {}
-
-func (t *TinyRouter) Patch(path string, f func(http.ResponseWriter, *http.Request)) {}
-
-func (t *TinyRouter) Delete(path string, f func(http.ResponseWriter, *http.Request)) {}
-
-func (t *TinyRouter) Options(path string, f func(http.ResponseWriter, *http.Request)) {}
-
-func (t *TinyRouter) Connect(path string, f func(http.ResponseWriter, *http.Request)) {}
-
-func (t *TinyRouter) Trace(path string, f func(http.ResponseWriter, *http.Request)) {}
