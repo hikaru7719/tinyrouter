@@ -6,6 +6,34 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestExtractParam(t *testing.T) {
+	cases := map[string]struct {
+		path   string
+		expect []string
+	}{
+		"path without param": {
+			path:   "/todo",
+			expect: []string{},
+		},
+		"path with param": {
+			path:   "/todo/{id}",
+			expect: []string{"id"},
+		},
+		"path with multiple param": {
+			path:   "/todo/{id}/{field}",
+			expect: []string{"id", "field"},
+		},
+	}
+
+	for name, tc := range cases {
+		t.Run(name, func(t *testing.T) {
+			indexList, _ := bracesIndex(tc.path)
+			actual := extractParam(tc.path, indexList)
+			assert.Equal(t, tc.expect, actual)
+		})
+	}
+}
+
 func TestMakePattern(t *testing.T) {
 	cases := map[string]struct {
 		path   string

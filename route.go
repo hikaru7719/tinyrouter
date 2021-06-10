@@ -20,6 +20,14 @@ type Route struct {
 	HandleFunc func(http.ResponseWriter, *http.Request)
 }
 
+func extractParam(path string, indexList []int) []string {
+	paramList := make([]string, 0)
+	for i := 0; i < len(indexList); i += 2 {
+		paramList = append(paramList, path[indexList[i]+1:indexList[i+1]])
+	}
+	return paramList
+}
+
 func makePattern(path string, indexList []int) string {
 	var builder strings.Builder
 	if len(indexList) == 0 {
