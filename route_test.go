@@ -1,6 +1,7 @@
 package tinyrouter
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -140,6 +141,44 @@ func TestBracesIndex(t *testing.T) {
 				assert.Equal(t, tc.expectError, err)
 			}
 			assert.Equal(t, tc.expect, actual)
+		})
+	}
+}
+
+func TestNewRoute(t *testing.T) {
+	cases := map[string]struct {
+		path               string
+		method             string
+		expectParamNames   []string
+		expectRegexpString string
+	}{
+		"path without param": {
+			path:               "/todo",
+			method:             http.MethodGet,
+			expectParamNames:   []string{},
+			expectRegexpString: "^/todo[/]?$",
+		},
+		"path with param": {
+			path:               "/todo/{id}",
+			method:             http.MethodGet,
+			expectParamNames:   []string{"id"},
+			expectRegexpString: "^/todo/([^/]+)[/]?$",
+		},
+		"path with multipule params": {
+			path:               "/todo/{id}/{field}",
+			method:             http.MethodGet,
+			expectParamNames:   []string{"id", "field"},
+			expectRegexpString: "^/todo/([^/]+)/([^/]+)[/]?$",
+		},
+	}
+
+	for name, tc := range cases {
+		t.Run(name, func(t *testing.T) {
+			route, _ := NewRoute(tc.method, tc.path, func(http.ResponseWriter, *http.Request) {})
+			assert.Equal(t, tc.method, route.Method)
+			assert.Equal(t, tc.path, route.Path)
+			assert.Equal(t, tc.expectParamNames, route.ParamNames)
+			assert.Equal(t, tc.expectRegexpString, route.Pattern.String())
 		})
 	}
 }
