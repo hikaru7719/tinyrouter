@@ -74,4 +74,19 @@ func (t *TinyRouter) Trace(path string, f func(http.ResponseWriter, *http.Reques
 	t.addRoute(http.MethodTrace, path, f)
 }
 
-func (t *TinyRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {}
+func (t *TinyRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	var handler func(w http.ResponseWriter, r *http.Request)
+	for _, route := range t.Routes {
+		isMatch := route.Match(r)
+		if isMatch {
+			handler = route.HandleFunc
+			break
+		}
+	}
+
+	if handler == nil {
+		// TODO: Set NotFoundHandler to var handler
+		// handler = DefaultNotFoundHandler
+	}
+	handler(w, r)
+}
