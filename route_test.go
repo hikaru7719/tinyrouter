@@ -1,7 +1,9 @@
 package tinyrouter
 
 import (
+	"fmt"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -179,6 +181,75 @@ func TestNewRoute(t *testing.T) {
 			assert.Equal(t, tc.path, route.Path)
 			assert.Equal(t, tc.expectParamNames, route.ParamNames)
 			assert.Equal(t, tc.expectRegexpString, route.Pattern.String())
+		})
+	}
+}
+
+func TestMatch(t *testing.T) {
+	cases := map[string]struct {
+		method        string
+		path          string
+		requestMethod string
+		requestPath   string
+		expectMatch   bool
+	}{
+		"Route GET /todo match GET /todo": {
+			method:        http.MethodGet,
+			path:          "/todo",
+			requestMethod: http.MethodGet,
+			requestPath:   "/todo",
+			expectMatch:   true,
+		},
+		"Route GET /todo match GET /todo/": {
+			method:        http.MethodGet,
+			path:          "/todo",
+			requestMethod: http.MethodGet,
+			requestPath:   "/todo/",
+			expectMatch:   true,
+		},
+		"Route GET /todo doesn't match POST /todo": {
+			method:        http.MethodGet,
+			path:          "/todo",
+			requestMethod: http.MethodPost,
+			requestPath:   "/todo",
+			expectMatch:   false,
+		},
+		"Route GET /todo/{id} match GET /todo/aaa": {
+			method:        http.MethodGet,
+			path:          "/todo/{id}",
+			requestMethod: http.MethodGet,
+			requestPath:   "/todo/aaa",
+			expectMatch:   true,
+		},
+		"Route GET /todo/{id} match GET /todo/123": {
+			method:        http.MethodGet,
+			path:          "/todo/{id}",
+			requestMethod: http.MethodGet,
+			requestPath:   "/todo/123",
+			expectMatch:   true,
+		},
+		"Route GET /todo/{id} match GET /todo/123/": {
+			method:        http.MethodGet,
+			path:          "/todo/{id}",
+			requestMethod: http.MethodGet,
+			requestPath:   "/todo/123/",
+			expectMatch:   true,
+		},
+		"Route GET /todo/{id}/{field} match GET /todo/aaa/status": {
+			method:        http.MethodGet,
+			path:          "/todo/{id}/{field}",
+			requestMethod: http.MethodGet,
+			requestPath:   "/todo/123/status",
+			expectMatch:   true,
+		},
+	}
+
+	for name, tc := range cases {
+		t.Run(name, func(t *testing.T) {
+			route, _ := NewRoute(tc.method, tc.path, func(http.ResponseWriter, *http.Request) {})
+			req := httptest.NewRequest(tc.requestMethod, fmt.Sprintf("https://example.com%s", tc.requestPath), nil)
+			actual := route.Match(req)
+			assert.Equal(t, tc.expectMatch, actual)
 		})
 	}
 }
