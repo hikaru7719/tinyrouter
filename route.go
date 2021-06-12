@@ -109,7 +109,7 @@ func NewRoute(method string, raw string, f func(http.ResponseWriter, *http.Reque
 }
 
 func (m *Route) Match(r *http.Request) bool {
-	matchMethod := m.Method != r.Method
+	matchMethod := m.Method == r.Method
 	matchPath := m.Pattern.MatchString(r.URL.Path)
 
 	return matchMethod && matchPath
