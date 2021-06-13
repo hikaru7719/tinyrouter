@@ -29,6 +29,7 @@ func TestExtractParam(t *testing.T) {
 	}
 
 	for name, tc := range cases {
+		tc := tc
 		t.Run(name, func(t *testing.T) {
 			indexList, _ := bracesIndex(tc.path)
 			actual := extractParam(tc.path, indexList)
@@ -56,6 +57,7 @@ func TestMakePattern(t *testing.T) {
 		},
 	}
 	for name, tc := range cases {
+		tc := tc
 		t.Run(name, func(t *testing.T) {
 			indexList, _ := bracesIndex(tc.path)
 			actual := makePatternString(tc.path, indexList)
@@ -88,6 +90,7 @@ func TestNormalize(t *testing.T) {
 	}
 
 	for name, tc := range cases {
+		tc := tc
 		t.Run(name, func(t *testing.T) {
 			actual, err := normalize(tc.path)
 			if tc.expectError != nil {
@@ -137,6 +140,7 @@ func TestBracesIndex(t *testing.T) {
 	}
 
 	for name, tc := range cases {
+		tc := tc
 		t.Run(name, func(t *testing.T) {
 			actual, err := bracesIndex(tc.path)
 			if tc.expectError != nil {
@@ -175,6 +179,7 @@ func TestNewRoute(t *testing.T) {
 	}
 
 	for name, tc := range cases {
+		tc := tc
 		t.Run(name, func(t *testing.T) {
 			route, _ := NewRoute(tc.method, tc.path, func(http.ResponseWriter, *http.Request) {})
 			assert.Equal(t, tc.method, route.Method)
@@ -245,6 +250,7 @@ func TestMatch(t *testing.T) {
 	}
 
 	for name, tc := range cases {
+		tc := tc
 		t.Run(name, func(t *testing.T) {
 			route, _ := NewRoute(tc.method, tc.path, func(http.ResponseWriter, *http.Request) {})
 			req := httptest.NewRequest(tc.requestMethod, fmt.Sprintf("https://example.com%s", tc.requestPath), nil)
@@ -286,6 +292,7 @@ func TestSetParam(t *testing.T) {
 	}
 
 	for name, tc := range cases {
+		tc := tc
 		t.Run(name, func(t *testing.T) {
 			route, _ := NewRoute(tc.method, tc.path, func(http.ResponseWriter, *http.Request) {})
 			req := httptest.NewRequest(tc.requestMethod, fmt.Sprintf("https://example.com%s", tc.requestPath), nil)
