@@ -1,6 +1,13 @@
 package tinyrouter
 
-import "net/http"
+import (
+	"context"
+	"net/http"
+)
+
+type contextKey string
+
+var key contextKey = "tinyrouterContextKey"
 
 type Router interface {
 	ServeHTTP(http.ResponseWriter, *http.Request)
@@ -76,17 +83,29 @@ func (t *TinyRouter) Trace(path string, f func(http.ResponseWriter, *http.Reques
 
 func (t *TinyRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var handler func(w http.ResponseWriter, r *http.Request)
+	params := make(map[string]interface{})
+
 	for _, route := range t.Routes {
 		isMatch := route.Match(r)
 		if isMatch {
 			handler = route.HandleFunc
+			route.SetParams(r, params)
 			break
 		}
 	}
 
 	if handler == nil {
-		// TODO: Set NotFoundHandler to var handler
-		// handler = DefaultNotFoundHandler
+		// TODO: set custom NotFoundHandler
+		handler = DefaultNotFoundHandler
 	}
-	handler(w, r)
+	newR := t.NewRequest(r, params)
+	handler(w, newR)
+}
+
+func (t *TinyRouter) NewRequest(r *http.Request, params map[string]interface{}) *http.Request {
+	if len(params) == 0 {
+		return r
+	}
+	ctx := context.WithValue(r.Context(), key, params)
+	return r.WithContext(ctx)
 }

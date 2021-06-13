@@ -114,3 +114,26 @@ func (m *Route) Match(r *http.Request) bool {
 
 	return matchMethod && matchPath
 }
+
+func (m *Route) params(r *http.Request) []string {
+	result := m.Pattern.FindStringSubmatch(r.URL.Path)
+	return result[1:]
+}
+
+func (m *Route) combineParams(paramValues []string, paramBox map[string]interface{}) {
+	if len(m.ParamNames) != len(paramValues) {
+		return
+	}
+
+	for index, name := range m.ParamNames {
+		paramBox[name] = paramValues[index]
+	}
+}
+
+func (m *Route) SetParams(r *http.Request, paramBox map[string]interface{}) {
+	if len(m.ParamNames) == 0 {
+		return
+	}
+	paramValues := m.params(r)
+	m.combineParams(paramValues, paramBox)
+}
