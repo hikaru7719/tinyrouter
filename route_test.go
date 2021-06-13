@@ -253,3 +253,51 @@ func TestMatch(t *testing.T) {
 		})
 	}
 }
+
+func TestSetParam(t *testing.T) {
+	cases := map[string]struct {
+		method        string
+		path          string
+		requestMethod string
+		requestPath   string
+		expextMap     map[string]interface{}
+	}{
+		"set params of Route GET /todo": {
+			method:        http.MethodGet,
+			path:          "/todo",
+			requestMethod: http.MethodGet,
+			requestPath:   "/todo",
+			expextMap:     map[string]interface{}{},
+		},
+		"set params of Route GET /todo/{id}": {
+			method:        http.MethodGet,
+			path:          "/todo/{id}",
+			requestMethod: http.MethodGet,
+			requestPath:   "/todo/abc",
+			expextMap:     map[string]interface{}{"id": "abc"},
+		},
+		"set params of Route GET /todo/{id}/{field}": {
+			method:        http.MethodGet,
+			path:          "/todo/{id}/{field}",
+			requestMethod: http.MethodGet,
+			requestPath:   "/todo/abc/def",
+			expextMap:     map[string]interface{}{"id": "abc", "field": "def"},
+		},
+	}
+
+	for name, tc := range cases {
+		t.Run(name, func(t *testing.T) {
+			route, _ := NewRoute(tc.method, tc.path, func(http.ResponseWriter, *http.Request) {})
+			req := httptest.NewRequest(tc.requestMethod, fmt.Sprintf("https://example.com%s", tc.requestPath), nil)
+			params := make(map[string]interface{})
+
+			route.SetParams(req, params)
+			assert.Equal(t, len(tc.expextMap), len(params))
+			for key, value := range tc.expextMap {
+				result := params[key]
+				assert.NotNil(t, result)
+				assert.Equal(t, value, result)
+			}
+		})
+	}
+}
