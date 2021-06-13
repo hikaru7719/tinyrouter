@@ -114,7 +114,7 @@ func TestBracesIndex(t *testing.T) {
 			expect:      []int{6, 9},
 			expectError: nil,
 		},
-		"path with multiple param": {
+		"path with multiple braces": {
 			path:        "/todo/{id}/{field}",
 			expect:      []int{6, 9, 11, 17},
 			expectError: nil,
@@ -193,49 +193,49 @@ func TestMatch(t *testing.T) {
 		requestPath   string
 		expectMatch   bool
 	}{
-		"Route GET /todo match GET /todo": {
+		"Route GET /todo matchs GET /todo": {
 			method:        http.MethodGet,
 			path:          "/todo",
 			requestMethod: http.MethodGet,
 			requestPath:   "/todo",
 			expectMatch:   true,
 		},
-		"Route GET /todo match GET /todo/": {
+		"Route GET /todo matchs GET /todo/": {
 			method:        http.MethodGet,
 			path:          "/todo",
 			requestMethod: http.MethodGet,
 			requestPath:   "/todo/",
 			expectMatch:   true,
 		},
-		"Route GET /todo doesn't match POST /todo": {
+		"Route GET /todo doesn't matchs POST /todo": {
 			method:        http.MethodGet,
 			path:          "/todo",
 			requestMethod: http.MethodPost,
 			requestPath:   "/todo",
 			expectMatch:   false,
 		},
-		"Route GET /todo/{id} match GET /todo/aaa": {
+		"Route GET /todo/{id} matchs GET /todo/aaa": {
 			method:        http.MethodGet,
 			path:          "/todo/{id}",
 			requestMethod: http.MethodGet,
 			requestPath:   "/todo/aaa",
 			expectMatch:   true,
 		},
-		"Route GET /todo/{id} match GET /todo/123": {
+		"Route GET /todo/{id} matchs GET /todo/123": {
 			method:        http.MethodGet,
 			path:          "/todo/{id}",
 			requestMethod: http.MethodGet,
 			requestPath:   "/todo/123",
 			expectMatch:   true,
 		},
-		"Route GET /todo/{id} match GET /todo/123/": {
+		"Route GET /todo/{id} matchs GET /todo/123/": {
 			method:        http.MethodGet,
 			path:          "/todo/{id}",
 			requestMethod: http.MethodGet,
 			requestPath:   "/todo/123/",
 			expectMatch:   true,
 		},
-		"Route GET /todo/{id}/{field} match GET /todo/aaa/status": {
+		"Route GET /todo/{id}/{field} matchs GET /todo/aaa/status": {
 			method:        http.MethodGet,
 			path:          "/todo/{id}/{field}",
 			requestMethod: http.MethodGet,
