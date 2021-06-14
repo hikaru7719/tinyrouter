@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/hikaru7719/tinyrouter"
@@ -15,10 +16,10 @@ func main() {
 }
 
 func Hello(rw http.ResponseWriter, r *http.Request) {
-	rw.Write([]byte("Hello World!"))
+	fmt.Fprint(rw, "Hello World!\n")
 }
 
 func HelloName(rw http.ResponseWriter, r *http.Request) {
 	name := tinyrouter.Param(r, "name")
-	rw.Write([]byte("Hello " + name + "!"))
+	fmt.Fprintf(rw, "Hello %s!\n", name)
 }
