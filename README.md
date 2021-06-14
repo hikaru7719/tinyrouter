@@ -1,6 +1,6 @@
 # TinyRouter
 
-TinyRouter is HTTP routing library to study routing algorithm.
+TinyRouter is a HTTP routing library to lean routing algorithm.
 This library is so simple and small. But this is not for using at production.
 
 TinyRouter can only do path base routing.
