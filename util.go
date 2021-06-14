@@ -9,12 +9,12 @@ type contextKey string
 
 var tinyrouterKey contextKey = "tinyrouterKey"
 
-func DefaultNotFoundHandler(w http.ResponseWriter, r *http.Request) {
+func defaultNotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
 	w.Write([]byte("Route Not Found"))
 }
 
-func NewRequest(r *http.Request, params map[string]interface{}) *http.Request {
+func newRequest(r *http.Request, params map[string]interface{}) *http.Request {
 	if len(params) == 0 {
 		return r
 	}

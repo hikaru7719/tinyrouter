@@ -13,7 +13,7 @@ var (
 	UnbalancedBracesError = errors.New("tinyrouter: unbalanced braces")
 )
 
-type Route struct {
+type route struct {
 	ParamNames []string
 	Method     string
 	Path       string
@@ -83,7 +83,7 @@ func bracesIndex(path string) ([]int, error) {
 	return indexList, nil
 }
 
-func NewRoute(method string, raw string, f func(http.ResponseWriter, *http.Request)) (*Route, error) {
+func newRoute(method string, raw string, f func(http.ResponseWriter, *http.Request)) (*route, error) {
 	path, pathErr := normalize(raw)
 	if pathErr != nil {
 		return nil, pathErr
@@ -99,7 +99,7 @@ func NewRoute(method string, raw string, f func(http.ResponseWriter, *http.Reque
 		return nil, patternErr
 	}
 
-	return &Route{
+	return &route{
 		ParamNames: extractParam(path, indexList),
 		Method:     method,
 		Path:       raw,
@@ -108,19 +108,19 @@ func NewRoute(method string, raw string, f func(http.ResponseWriter, *http.Reque
 	}, nil
 }
 
-func (m *Route) Match(r *http.Request) bool {
+func (m *route) match(r *http.Request) bool {
 	matchMethod := m.Method == r.Method
 	matchPath := m.Pattern.MatchString(r.URL.Path)
 
 	return matchMethod && matchPath
 }
 
-func (m *Route) params(r *http.Request) []string {
+func (m *route) params(r *http.Request) []string {
 	result := m.Pattern.FindStringSubmatch(r.URL.Path)
 	return result[1:]
 }
 
-func (m *Route) combineParams(paramValues []string, paramBox map[string]interface{}) {
+func (m *route) combineParams(paramValues []string, paramBox map[string]interface{}) {
 	if len(m.ParamNames) != len(paramValues) {
 		return
 	}
@@ -130,7 +130,7 @@ func (m *Route) combineParams(paramValues []string, paramBox map[string]interfac
 	}
 }
 
-func (m *Route) SetParams(r *http.Request, paramBox map[string]interface{}) {
+func (m *route) setParams(r *http.Request, paramBox map[string]interface{}) {
 	if len(m.ParamNames) == 0 {
 		return
 	}

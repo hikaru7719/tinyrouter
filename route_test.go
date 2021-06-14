@@ -181,7 +181,7 @@ func TestNewRoute(t *testing.T) {
 	for name, tc := range cases {
 		tc := tc
 		t.Run(name, func(t *testing.T) {
-			route, _ := NewRoute(tc.method, tc.path, func(http.ResponseWriter, *http.Request) {})
+			route, _ := newRoute(tc.method, tc.path, func(http.ResponseWriter, *http.Request) {})
 			assert.Equal(t, tc.method, route.Method)
 			assert.Equal(t, tc.path, route.Path)
 			assert.Equal(t, tc.expectParamNames, route.ParamNames)
@@ -252,9 +252,9 @@ func TestMatch(t *testing.T) {
 	for name, tc := range cases {
 		tc := tc
 		t.Run(name, func(t *testing.T) {
-			route, _ := NewRoute(tc.method, tc.path, func(http.ResponseWriter, *http.Request) {})
+			route, _ := newRoute(tc.method, tc.path, func(http.ResponseWriter, *http.Request) {})
 			req := httptest.NewRequest(tc.requestMethod, fmt.Sprintf("https://example.com%s", tc.requestPath), nil)
-			actual := route.Match(req)
+			actual := route.match(req)
 			assert.Equal(t, tc.expectMatch, actual)
 		})
 	}
@@ -294,11 +294,11 @@ func TestSetParam(t *testing.T) {
 	for name, tc := range cases {
 		tc := tc
 		t.Run(name, func(t *testing.T) {
-			route, _ := NewRoute(tc.method, tc.path, func(http.ResponseWriter, *http.Request) {})
+			route, _ := newRoute(tc.method, tc.path, func(http.ResponseWriter, *http.Request) {})
 			req := httptest.NewRequest(tc.requestMethod, fmt.Sprintf("https://example.com%s", tc.requestPath), nil)
 			params := make(map[string]interface{})
 
-			route.SetParams(req, params)
+			route.setParams(req, params)
 			assert.Equal(t, len(tc.expextMap), len(params))
 			for key, value := range tc.expextMap {
 				result := params[key]

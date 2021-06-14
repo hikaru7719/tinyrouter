@@ -22,22 +22,22 @@ type Router interface {
 
 // TinyRouter implements http.Handler interface.
 type TinyRouter struct {
-	Routes []*Route
+	routes []*route
 }
 
 func NewRouter() *TinyRouter {
 	return &TinyRouter{
-		Routes: make([]*Route, 0),
+		routes: make([]*route, 0),
 	}
 }
 
 func (t *TinyRouter) addRoute(method string, path string, f func(http.ResponseWriter, *http.Request)) {
-	route, err := NewRoute(method, path, f)
+	route, err := newRoute(method, path, f)
 	if err != nil {
 		// TODO: implement err handling
 		panic(err)
 	}
-	t.Routes = append(t.Routes, route)
+	t.routes = append(t.routes, route)
 }
 
 func (t *TinyRouter) Head(path string, f func(http.ResponseWriter, *http.Request)) {
@@ -80,19 +80,19 @@ func (t *TinyRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var handler func(w http.ResponseWriter, r *http.Request)
 	params := make(map[string]interface{})
 
-	for _, route := range t.Routes {
-		isMatch := route.Match(r)
+	for _, route := range t.routes {
+		isMatch := route.match(r)
 		if isMatch {
 			handler = route.HandleFunc
-			route.SetParams(r, params)
+			route.setParams(r, params)
 			break
 		}
 	}
 
 	if handler == nil {
 		// TODO: set custom NotFoundHandler
-		handler = DefaultNotFoundHandler
+		handler = defaultNotFoundHandler
 	}
-	newR := NewRequest(r, params)
+	newR := newRequest(r, params)
 	handler(w, newR)
 }
