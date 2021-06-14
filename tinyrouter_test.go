@@ -1,6 +1,7 @@
 package tinyrouter
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -32,19 +33,19 @@ func TestTinyRouter(t *testing.T) {
 			method:       http.MethodPut,
 			path:         "/todo/abc",
 			expectStatus: 200,
-			expectBody:   "PUT /todo/{id}",
+			expectBody:   "PUT /todo/abc",
 		},
 		{
 			method:       http.MethodDelete,
 			path:         "/todo/abc",
 			expectStatus: 200,
-			expectBody:   "DELETE /todo/{id}",
+			expectBody:   "DELETE /todo/abc",
 		},
 		{
 			method:       http.MethodGet,
 			path:         "/todo/abc/def",
 			expectStatus: 200,
-			expectBody:   "GET /todo/{id}/{field}",
+			expectBody:   "GET /todo/abc/def",
 		},
 		{
 			method:       http.MethodGet,
@@ -93,21 +94,25 @@ func testSetupRouter(t *testing.T, router *TinyRouter) {
 			method: http.MethodPut,
 			path:   "/todo/{id}",
 			f: func(w http.ResponseWriter, r *http.Request) {
-				w.Write([]byte("PUT /todo/{id}"))
+				id := Param(r, "id")
+				w.Write([]byte(fmt.Sprintf("PUT /todo/%s", id)))
 			},
 		},
 		{
 			method: http.MethodDelete,
 			path:   "/todo/{id}",
 			f: func(w http.ResponseWriter, r *http.Request) {
-				w.Write([]byte("DELETE /todo/{id}"))
+				id := Param(r, "id")
+				w.Write([]byte(fmt.Sprintf("DELETE /todo/%s", id)))
 			},
 		},
 		{
 			method: http.MethodGet,
 			path:   "/todo/{id}/{field}",
 			f: func(w http.ResponseWriter, r *http.Request) {
-				w.Write([]byte("GET /todo/{id}/{field}"))
+				id := Param(r, "id")
+				field := Param(r, "field")
+				w.Write([]byte(fmt.Sprintf("GET /todo/%s/%s", id, field)))
 			},
 		},
 	}
