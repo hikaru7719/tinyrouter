@@ -17,7 +17,7 @@ type Router interface {
 	Connect(string, func(http.ResponseWriter, *http.Request))
 	Trace(string, func(http.ResponseWriter, *http.Request))
 
-	Use(func(http.ResponseWriter, *http.Request) func(http.ResponseWriter, *http.Request))
+	// Use(func(http.ResponseWriter, *http.Request) func(http.ResponseWriter, *http.Request))
 }
 
 // TinyRouter implements http.Handler interface.
@@ -25,7 +25,7 @@ type TinyRouter struct {
 	routes []*route
 }
 
-func NewRouter() *TinyRouter {
+func New() *TinyRouter {
 	return &TinyRouter{
 		routes: make([]*route, 0),
 	}

@@ -1,19 +1,3 @@
-# TinyRouter
-
-TinyRouter is HTTP routing library to study routing algorithm.
-This library is so simple and small. But this is not for using at production.
-
-TinyRouter can only do path base routing.
-
-# Install
-
-```
-go get -u github.com/hikaru7719/tinyrouter
-```
-
-# Example
-
-```go
 package main
 
 import (
@@ -38,4 +22,3 @@ func HelloName(rw http.ResponseWriter, r *http.Request) {
 	name := tinyrouter.Param(r, "name")
 	rw.Write([]byte("Hello " + name + "!"))
 }
-```
