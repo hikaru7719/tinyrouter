@@ -55,7 +55,7 @@ func TestTinyRouter(t *testing.T) {
 		},
 	}
 
-	router := NewRouter()
+	router := New()
 	testSetupRouter(t, router)
 
 	server := httptest.NewServer(router)

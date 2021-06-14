@@ -182,10 +182,10 @@ func TestNewRoute(t *testing.T) {
 		tc := tc
 		t.Run(name, func(t *testing.T) {
 			route, _ := newRoute(tc.method, tc.path, func(http.ResponseWriter, *http.Request) {})
-			assert.Equal(t, tc.method, route.Method)
-			assert.Equal(t, tc.path, route.Path)
-			assert.Equal(t, tc.expectParamNames, route.ParamNames)
-			assert.Equal(t, tc.expectRegexpString, route.Pattern.String())
+			assert.Equal(t, tc.method, route.method)
+			assert.Equal(t, tc.path, route.path)
+			assert.Equal(t, tc.expectParamNames, route.paramNames)
+			assert.Equal(t, tc.expectRegexpString, route.pattern.String())
 		})
 	}
 }

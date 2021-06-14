@@ -7,17 +7,15 @@ import (
 type Router interface {
 	ServeHTTP(http.ResponseWriter, *http.Request)
 
-	Head(string, func(http.ResponseWriter, *http.Request))
-	Get(string, func(http.ResponseWriter, *http.Request))
-	Post(string, func(http.ResponseWriter, *http.Request))
-	Put(string, func(http.ResponseWriter, *http.Request))
-	Patch(string, func(http.ResponseWriter, *http.Request))
-	Delete(string, func(http.ResponseWriter, *http.Request))
-	Options(string, func(http.ResponseWriter, *http.Request))
-	Connect(string, func(http.ResponseWriter, *http.Request))
-	Trace(string, func(http.ResponseWriter, *http.Request))
-
-	// Use(func(http.ResponseWriter, *http.Request) func(http.ResponseWriter, *http.Request))
+	Head(string, http.HandlerFunc)
+	Get(string, http.HandlerFunc)
+	Post(string, http.HandlerFunc)
+	Put(string, http.HandlerFunc)
+	Patch(string, http.HandlerFunc)
+	Delete(string, http.HandlerFunc)
+	Options(string, http.HandlerFunc)
+	Connect(string, http.HandlerFunc)
+	Trace(string, http.HandlerFunc)
 }
 
 // TinyRouter implements http.Handler interface.
@@ -31,7 +29,7 @@ func New() *TinyRouter {
 	}
 }
 
-func (t *TinyRouter) addRoute(method string, path string, f func(http.ResponseWriter, *http.Request)) {
+func (t *TinyRouter) addRoute(method string, path string, f http.HandlerFunc) {
 	route, err := newRoute(method, path, f)
 	if err != nil {
 		// TODO: implement err handling
@@ -40,50 +38,50 @@ func (t *TinyRouter) addRoute(method string, path string, f func(http.ResponseWr
 	t.routes = append(t.routes, route)
 }
 
-func (t *TinyRouter) Head(path string, f func(http.ResponseWriter, *http.Request)) {
+func (t *TinyRouter) Head(path string, f http.HandlerFunc) {
 	t.addRoute(http.MethodHead, path, f)
 }
 
-func (t *TinyRouter) Get(path string, f func(http.ResponseWriter, *http.Request)) {
+func (t *TinyRouter) Get(path string, f http.HandlerFunc) {
 	t.addRoute(http.MethodGet, path, f)
 }
 
-func (t *TinyRouter) Post(path string, f func(http.ResponseWriter, *http.Request)) {
+func (t *TinyRouter) Post(path string, f http.HandlerFunc) {
 	t.addRoute(http.MethodPost, path, f)
 }
 
-func (t *TinyRouter) Put(path string, f func(http.ResponseWriter, *http.Request)) {
+func (t *TinyRouter) Put(path string, f http.HandlerFunc) {
 	t.addRoute(http.MethodPut, path, f)
 }
 
-func (t *TinyRouter) Patch(path string, f func(http.ResponseWriter, *http.Request)) {
+func (t *TinyRouter) Patch(path string, f http.HandlerFunc) {
 	t.addRoute(http.MethodPatch, path, f)
 }
 
-func (t *TinyRouter) Delete(path string, f func(http.ResponseWriter, *http.Request)) {
+func (t *TinyRouter) Delete(path string, f http.HandlerFunc) {
 	t.addRoute(http.MethodDelete, path, f)
 }
 
-func (t *TinyRouter) Options(path string, f func(http.ResponseWriter, *http.Request)) {
+func (t *TinyRouter) Options(path string, f http.HandlerFunc) {
 	t.addRoute(http.MethodOptions, path, f)
 }
 
-func (t *TinyRouter) Connect(path string, f func(http.ResponseWriter, *http.Request)) {
+func (t *TinyRouter) Connect(path string, f http.HandlerFunc) {
 	t.addRoute(http.MethodConnect, path, f)
 }
 
-func (t *TinyRouter) Trace(path string, f func(http.ResponseWriter, *http.Request)) {
+func (t *TinyRouter) Trace(path string, f http.HandlerFunc) {
 	t.addRoute(http.MethodTrace, path, f)
 }
 
 func (t *TinyRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	var handler func(w http.ResponseWriter, r *http.Request)
+	var handler func(http.ResponseWriter, *http.Request)
 	params := make(map[string]interface{})
 
 	for _, route := range t.routes {
 		isMatch := route.match(r)
 		if isMatch {
-			handler = route.HandleFunc
+			handler = route.handleFunc
 			route.setParams(r, params)
 			break
 		}

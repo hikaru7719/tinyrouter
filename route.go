@@ -14,11 +14,11 @@ var (
 )
 
 type route struct {
-	ParamNames []string
-	Method     string
-	Path       string
-	Pattern    *regexp.Regexp
-	HandleFunc func(http.ResponseWriter, *http.Request)
+	paramNames []string
+	method     string
+	path       string
+	pattern    *regexp.Regexp
+	handleFunc http.HandlerFunc
 }
 
 func extractParam(path string, indexList []int) []string {
@@ -100,38 +100,38 @@ func newRoute(method string, raw string, f func(http.ResponseWriter, *http.Reque
 	}
 
 	return &route{
-		ParamNames: extractParam(path, indexList),
-		Method:     method,
-		Path:       raw,
-		Pattern:    pattern,
-		HandleFunc: f,
+		paramNames: extractParam(path, indexList),
+		method:     method,
+		path:       raw,
+		pattern:    pattern,
+		handleFunc: f,
 	}, nil
 }
 
 func (m *route) match(r *http.Request) bool {
-	matchMethod := m.Method == r.Method
-	matchPath := m.Pattern.MatchString(r.URL.Path)
+	matchMethod := m.method == r.Method
+	matchPath := m.pattern.MatchString(r.URL.Path)
 
 	return matchMethod && matchPath
 }
 
 func (m *route) params(r *http.Request) []string {
-	result := m.Pattern.FindStringSubmatch(r.URL.Path)
+	result := m.pattern.FindStringSubmatch(r.URL.Path)
 	return result[1:]
 }
 
 func (m *route) combineParams(paramValues []string, paramBox map[string]interface{}) {
-	if len(m.ParamNames) != len(paramValues) {
+	if len(m.paramNames) != len(paramValues) {
 		return
 	}
 
-	for index, name := range m.ParamNames {
+	for index, name := range m.paramNames {
 		paramBox[name] = paramValues[index]
 	}
 }
 
 func (m *route) setParams(r *http.Request, paramBox map[string]interface{}) {
-	if len(m.ParamNames) == 0 {
+	if len(m.paramNames) == 0 {
 		return
 	}
 	paramValues := m.params(r)
