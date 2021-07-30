@@ -1,3 +1,5 @@
+// Copyright (c) 2021 Hikaru Miyahara
+// Copyright (c) 2012-2018 The Gorilla Authors.
 package tinyrouter
 
 import (
